@@ -101,7 +101,7 @@ const checkEmail = () => {
                   </button>
 
                   <p className="mt-4 text-xl font-bold text-black sm:mt-0">
-                    Dont Have an Account??
+                    Dont Have an Account?
                     <Link to={"/register"} className='text-violet-600 hover:text-violet-800 hover:text-underline ml-2 text-decoration: underline'>Register</Link>
                   </p>
                 </div>
