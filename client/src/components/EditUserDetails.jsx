@@ -75,6 +75,7 @@ const EditUserDetails = ({ onClose, user }) => {
             if(response?.data?.success){
                 dispatch(setUser(response.data.data))
             }
+            onClose()
         } catch (error) {
             console.log(error)
             toast.error(error?.response?.data?.message)
@@ -103,8 +104,8 @@ const EditUserDetails = ({ onClose, user }) => {
                     <span className='font-bold px-1'>Profile Picture</span>
                     <div className='my-1 flex items-center gap-4'>
                         <Avatar
-                            width={150}
-                            height={150}
+                            width={100}
+                            height={100}
                             imageUrl={data?.profile_pic}
                             name={data?.name}
                         />
