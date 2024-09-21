@@ -4,16 +4,20 @@ import Divider from "./Divider"
 import axios from "axios"
 import toast from "react-hot-toast"
 import uploadFile from '../helpers/uploadFile';
+import {useDispatch} from "react-redux"
+import { setUser } from '../redux/userSlice'
 
 const EditUserDetails = ({ onClose, user }) => {
     const [uploadPhoto, setUploadPhoto] = useState("");
 
     const [data, setData] = useState({
+
         name: user?.user,
         profile_pic: user?.profile_pic
     });
 
     const uploadPhotoRef = useRef()
+    const dispatch = useDispatch();
 
     useEffect(() => {
         setData((prev) => {
@@ -35,7 +39,9 @@ const EditUserDetails = ({ onClose, user }) => {
         })
     }
 
-    const handleOpenUploadPhoto = ()=> {
+    const handleOpenUploadPhoto = (e)=> {
+        e.preventDefault()
+        e.stopPropagation()
         uploadPhotoRef.current.click()
     }
 
@@ -59,9 +65,18 @@ const EditUserDetails = ({ onClose, user }) => {
         e.stopPropagation()
         try {
             const URL = `http://localhost:4000/api/users/update-user-details`
-            const response = await axios.post(URL,data)
-            toast.success(response.data.message)
+            const response = await axios({
+                method: 'post',
+                url: URL,
+                data: data,
+                withCredentials: true
+            })
+            toast.success(response?.data?.message)
+            if(response?.data?.success){
+                dispatch(setUser(response.data.data))
+            }
         } catch (error) {
+            console.log(error)
             toast.error(error?.response?.data?.message)
         }
     }
@@ -111,7 +126,9 @@ const EditUserDetails = ({ onClose, user }) => {
                 </div>
                 <Divider/>
                 <div className='flex ml-8 gap-2 mt-2'>
-                    <button className="inline-block shrink-0 border bg-white px-12 py-3 text-md font-medium text-black transition hover:bg-violet-600 hover:text-white focus:outline-none focus:ring active:text-white">
+                    <button className="inline-block shrink-0 border bg-white px-12 py-3 text-md font-medium text-black transition hover:bg-violet-600 hover:text-white focus:outline-none focus:ring active:text-white"
+                    onClick={onClose}
+                    >
                         Cancel
                     </button>
                     <button className="inline-block shrink-0 rounded-md border bg-white px-12 py-3 text-md font-medium text-black transition hover:bg-violet-600 hover:text-white focus:outline-none focus:ring active:text-white"
