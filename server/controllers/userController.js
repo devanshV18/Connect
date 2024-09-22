@@ -188,26 +188,26 @@ const checkPassword = asynchHandler( async(req,res) => {
 
     const searchUser = asynchHandler( async(req,res) => {
         try {
-            //destructuring req parametes from body
             const { search } = req.body
-            const query = new RegExp(search, "i", "g")
+    
+            const query = new RegExp(search,"i","g")
+    
             const user = await UserModel.find({
                 "$or" : [
-                    {name : query},
-                    { email : query}
+                    { name : query },
+                    { email : query }
                 ]
+            }).select("-password")
+    
+            return res.json({
+                message : 'all user',
+                data : user,
+                success : true
             })
-
-            return response.json({
-                message: "All users",
-                data: user,
-                success: true   
-            })
-
         } catch (error) {
-            return response.status(500).json({
-                message: error.message || error,
-                error: true
+            return res.status(500).json({
+                message : error.message || error,
+                error : true
             })
         }
     })
