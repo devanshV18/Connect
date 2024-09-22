@@ -16,6 +16,9 @@ const Avatar = ({ userId, name, imageUrl, width, height }) => {
 
   const bgColor = [
     'bg-violet-300',
+    'bg-yellow-300',
+    'bg-green-200',
+    'bg-red-200'
   ]
 
   // const randomNumber = Math.floor(Math.random() * 6)
