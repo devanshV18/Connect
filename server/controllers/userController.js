@@ -186,5 +186,30 @@ const checkPassword = asynchHandler( async(req,res) => {
         }
     })
 
+    const searchUser = asynchHandler( async(req,res) => {
+        try {
+            //destructuring req parametes from body
+            const { search } = req.body
+            const query = new RegExp(search, "i", "g")
+            const user = await UserModel.find({
+                "$or" : [
+                    {name : query},
+                    { email : query}
+                ]
+            })
 
-module.exports  = {registerUser, checkEmail, checkPassword, userDetails, logout, updateUserDetails}
+            return response.json({
+                message: "All users",
+                data: user,
+                success: true   
+            })
+
+        } catch (error) {
+            return response.status(500).json({
+                message: error.message || error,
+                error: true
+            })
+        }
+    })
+
+module.exports  = {registerUser, checkEmail, checkPassword, userDetails, logout, updateUserDetails, searchUser}

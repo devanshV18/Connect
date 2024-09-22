@@ -1,5 +1,5 @@
 const express = require('express')
-const {registerUser, checkEmail, checkPassword, userDetails, logout, updateUserDetails} = require('../controllers/userController')
+const {registerUser, checkEmail, checkPassword, userDetails, logout, updateUserDetails, searchUser} = require('../controllers/userController')
 
 const router = express.Router()
 
@@ -12,5 +12,6 @@ router.post('/checkpassword', checkPassword)
 router.get('/userdetails',userDetails)
 router.get('/logout', logout)
 router.post('/update-user-details', updateUserDetails)
+router.post('/search-user', searchUser)
 
 module.exports = router
