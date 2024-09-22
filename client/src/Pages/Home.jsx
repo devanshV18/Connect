@@ -59,7 +59,7 @@ const Home = () => {
             alt='logo'
           />
         </div>
-        <p className='font-semibold text-xl'>Pick Someone to start <span className='text-violet-600'>Connecting!</span></p>
+        <p className='font-bold text-2xl'>Pick Someone to start <span className='text-violet-600'>Connecting!</span></p>
       </div>
    </div>
   )
