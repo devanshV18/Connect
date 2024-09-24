@@ -4,10 +4,11 @@ import Loading from './Loading';
 import UserSearchCard from './UserSearchCard';
 import toast from "react-hot-toast"
 import axios from "axios"
+import { IoCloseSharp } from "react-icons/io5";
 
-const SearchUser = () => {
+const SearchUser = ({onClose}) => {
     const [searchUser, setSearchUser] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [search, setSearch] = useState("");
 
     const handleSearchUser = async() => {
@@ -73,16 +74,24 @@ const SearchUser = () => {
                 searchUser.length !== 0 && !loading && (
                         searchUser.map((user,index) => {
                             return(
-                                <UserSearchCard key={user._id} user={user}/>
+                                <UserSearchCard key={user._id} user={user} onClose={onClose}/>
                             )
                         })
                 )
             }
 
         </div>
-
-      </div>
     </div>
+    <div className='absolute top-0 right-0 text-2xl p-12 lg:text-4xl hover:text-white' 
+        onClick={onClose}
+    >
+        <button>
+            <IoCloseSharp 
+          
+            />
+        </button>
+    </div>
+</div>
   )
 }
 

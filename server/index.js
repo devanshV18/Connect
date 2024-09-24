@@ -3,10 +3,10 @@ const cors = require('cors')
 require('dotenv').config()
 const {connectDb} = require('./config/connectDb')
 const cookieParser = require('cookie-parser')
+const { app, server } = require('./socket/index')
 
 
-
-const app = express()
+// const app = express()
 app.use(cors({
     origin: process.env.FRONTEND_URL,
     credentials: true
@@ -30,7 +30,7 @@ app.use('/api/users',require("./routes/userRoutes"))
 
 
 connectDb().then(() => {
-    app.listen(PORT, () => {
+    server.listen(PORT, () => {
         console.log(`Server is running at ${PORT}`)
     })
 })

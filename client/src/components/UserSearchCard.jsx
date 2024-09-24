@@ -2,9 +2,9 @@ import React from 'react'
 import Avatar from "./Avatar"
 import { Link } from 'react-router-dom'
 
-const UserSearchCard = ({user}) => {
+const UserSearchCard = ({user,onClose}) => {
   return (
-    <Link to={"/"+user?._id} className='flex items-center gap-3 mt-4 lg:p-4 border border-transparent border-t-slate-200 hover:border hover:border-slate-400 rounded-md cursor-pointer '>
+    <Link to={"/"+user?._id} onClick={onClose} className='flex items-center gap-3 mt-4 lg:p-4 border border-transparent border-t-slate-200 hover:border hover:border-slate-400 rounded-md cursor-pointer '>
       <div>
         <Avatar
           width = {40}
