@@ -42,6 +42,7 @@ const Sidebar = () => {
                     height={40}
                     name={user.name}
                     imageUrl={user?.profile_pic}
+                    userId={user?._id}
                     />
                 </button>
                 <button title='logout' className='w-14 h-12 flex justify-center items-center cursor-pointer hover:bg-slate-200 rounded '>

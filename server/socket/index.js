@@ -30,7 +30,12 @@ io.on('connection', async(socket) => {
     //create a room
     socket.join(user?._id)
     onlineUser.add(user?._id)
+
     io.emit('onlineUser', Array.from(onlineUser))
+
+    socket.on('message-page', (userId) => {
+        console.log('user id', userId)
+    })
 
     socket.on('disconnect', () => {
         onlineUser.delete(user?._id)
