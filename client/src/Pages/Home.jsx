@@ -48,6 +48,7 @@ const Home = () => {
        token: localStorage.getItem('token')
       }
     })
+    // console.log("spcketconnection",socketConnection)
 
     socketConnection.on('onlineUser', (data) => {
       console.log(data)

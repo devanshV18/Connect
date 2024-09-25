@@ -1,17 +1,23 @@
 import React, { useEffect } from 'react'
-import { useParams } from 'react-router-dom'
 import { useSelector } from 'react-redux'
+import { useParams } from 'react-router-dom'
 
 const Message = () => {
   const params = useParams()
   console.log("params", params?.userId)
-  const socketConenction = useSelector(state => state?.user?.socketConenction)
+  
+  const socketConnection = useSelector(state => state.user.socketConnection)
 
+  
   useEffect(() => {
-    if(socketConenction){
-      socketConenction.emit('message-page', params.userId)
+    if(socketConnection){
+      
+      socketConnection.emit('message-page', params.userId)
+      socketConnection.on('message-user', (data) => {
+        console.log('userDetails', data)
+      })
     }
-  }, [socketConenction])
+  }, [socketConnection, params?.userId])
 
   return (
     <div>

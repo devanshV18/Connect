@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React from 'react';
 import { FaRegUserCircle } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
 
