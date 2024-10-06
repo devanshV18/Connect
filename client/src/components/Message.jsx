@@ -7,6 +7,8 @@ import { FaAngleLeft } from "react-icons/fa";
 import { MdAttachFile } from "react-icons/md";
 import { FaImages } from "react-icons/fa";
 import { RiFolderVideoFill } from "react-icons/ri";
+import uploadFile from '../helpers/uploadFile'
+import { RxCross2 } from "react-icons/rx";
 
 
 const Message = () => {
@@ -23,15 +25,56 @@ const Message = () => {
     _id: ""
   })
 
-  const [openUpload, setOpenUpload] = useState(false)
+  const [openUpload, setOpenUpload] = useState(false) 
+  const [message, setMessage] = useState({
+    text: "",
+    imageUrl: "",
+    videoUrl: ""
+  })
   
 
-  const handleUploadImage = async() => {
-    
+  const handleUploadImage = async(e) => {
+    const file = e.target.files[0]
+
+    const uploadImage = await uploadFile(file)
+
+    setMessage(prev => {
+      return{
+        ...prev,
+        imageUrl: uploadImage?.url
+      }
+    })
   }
 
-  const handleUploadVideo = () => {
+  const handleClearImage = () => {
+    setMessage(prev => {
+      return{
+        ...prev,
+        imageUrl: ""
+      }
+    })
+  }
 
+  const handleUploadVideo = async(e) => {
+    const file = e.target.files[0]
+
+    const uploadVideo = await uploadFile(file)
+
+    setMessage(prev => {
+      return{
+        ...prev,
+        videoUrl: uploadVideo?.url
+      }
+    })
+  }
+
+  const handleClearVideo = () => {
+    setMessage(prev => {
+      return{
+        ...prev,
+        videoUrl: ""
+      }
+    })
   }
   
   useEffect(() => {
@@ -43,6 +86,8 @@ const Message = () => {
       })
     }
   }, [socketConnection, params?.userId, user])
+
+
 
   return (
     <div>
@@ -80,12 +125,61 @@ const Message = () => {
         </div>
       </header>
 
-       <section className='h-[calc(100vh-128px)] overflow-x-hidden overflow-y-scroll scrollbar'>
+       <section className='h-[calc(100vh-128px)] overflow-x-hidden overflow-y-scroll scrollbar relative'>
+              
+
+              {
+                message.imageUrl && (
+                    <div className='w-full h-full bg-violet-300 bg-opacity-20 flex justify-center items-center rounded   overflow-hidden'>
+                      <div className='w-fit p-20 absolute top-0 right-0 cursor-pointer hover:text-violet-500'
+                        onClick={handleClearImage}
+                      >
+                        <RxCross2 
+                          size={50}
+                        />
+                      </div>
+                      <div className='bg-white p-3'>
+                        <img
+                          src={message?.imageUrl}
+                          width={300}
+                          height={300}
+                          alt='Uploaded Image'
+                        />
+                      </div>
+                    </div> 
+                  )
+              }
+
+{
+                message.videoUrl && (
+                    <div className='w-full h-full bg-violet-300 bg-opacity-20 flex justify-center items-center rounded   overflow-hidden'>
+                      <div className='w-fit p-20 absolute top-0 right-0 cursor-pointer hover:text-violet-500'
+                        onClick={handleClearVideo}
+                      >
+                        <RxCross2 
+                          size={50}
+                        />
+                      </div>
+                      <div className='bg-white p-3'>
+                        <div>
+                          <video
+                            src={message?.videoUrl}
+                            className='aspect-video w-full h-full max-w-sm'
+                            controls
+                            muted
+                            autoPlay  
+                          />
+                        </div>
+                      </div>
+                    </div> 
+                  )
+              }
+               
               Show all Messages
        </section>       
 
-       <section className='h-16 bg-white flex items-center'>
-         <div className='relative'>
+      <section className='h-16 bg-white flex items-center'>
+          <div className='relative'>
               <button className='flex justify-center items-center w-14 h-14 rounded-sm hover:bg-violet-400 p-4'
                   onClick = {() => setOpenUpload(!openUpload)}
               >
@@ -119,22 +213,22 @@ const Message = () => {
                       type='file'
                       id='uplaodImage'
                       onChange={handleUploadImage}
+                      className='hidden'
                     />
 
                     <input
                       type='file'
                       id='uploadVideo'
                       onChange={handleUploadVideo}
+                      className='hidden'
                     />
                   </form>
-                </div>
+                  </div>
                 )
               }
 
-              
-         </div>
-       </section>
-
+          </div>
+      </section>
     </div>
   )
 }
