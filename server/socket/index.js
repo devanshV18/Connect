@@ -3,7 +3,7 @@ const { Server } = require('socket.io')
 const http = require('http')
 const getUserDetailsFromToken = require("../helpers/getUserDetailsFromToken")
 const UserModel = require("../models/UserModel")
-
+const {conversationModel} = require("../models/ConversationModel")
 
 const app = express()
 
@@ -52,6 +52,13 @@ io.on('connection', async(socket) => {
 
         socket.emit("message-user", payload)
 
+    })
+
+    //new message
+    socket.on('new message', (data) => {
+        //check conversation is available for the two users
+     
+        console.log('New Message', data)
     })
 
     socket.on('disconnect', () => {
