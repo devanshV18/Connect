@@ -9,8 +9,9 @@ import { FaImages } from "react-icons/fa";
 import { RiFolderVideoFill } from "react-icons/ri";
 import uploadFile from '../helpers/uploadFile'
 import { RxCross2 } from "react-icons/rx";
-
-
+import Loading from './Loading'
+import backgroundImage from '../assets/wallpaper.jpeg'
+import { IoIosSend } from "react-icons/io";
 const Message = () => {
   const params = useParams()
   console.log("params", params?.userId)
@@ -32,12 +33,14 @@ const Message = () => {
     videoUrl: ""
   })
   
+  const [loading,setLoading] = useState(false)
 
   const handleUploadImage = async(e) => {
     const file = e.target.files[0]
-
+    setLoading(true)
     const uploadImage = await uploadFile(file)
-
+    setLoading(false)
+    setOpenUpload(false)
     setMessage(prev => {
       return{
         ...prev,
@@ -57,8 +60,10 @@ const Message = () => {
 
   const handleUploadVideo = async(e) => {
     const file = e.target.files[0]
-
+    setLoading(true)
     const uploadVideo = await uploadFile(file)
+    setLoading(false)
+    setOpenUpload(false)
 
     setMessage(prev => {
       return{
@@ -87,10 +92,34 @@ const Message = () => {
     }
   }, [socketConnection, params?.userId, user])
 
+  const handleOnChangeText = (e) => {
+    const {name,value} = e.target
+    setMessage(prev => {
+      return{
+        ...prev,
+        text: value
+      }
+    })
+  }
 
+  const handleSendMessage = (e) => {
+    e.preventDefault()
+    if(message.text || message.imageUrl || message.videoUrl){
+      if(socketConnection){
+        socketConnection.emit('new message', {
+          sender: user?._id,
+          receiver: params.userId,
+          text: message.text,
+          imageUrl: message.imageUrl,
+          videoUrl: message.videoUrl
+        })
+      }
+    }
+
+  }
 
   return (
-    <div>
+    <div style={{ backgroundImage: `url(${backgroundImage})`}} className='bg-no-repeat bg-cover'>
       <header className='sticky top-0 h-16 bg-white flex justify-between items-center px-8'>
         <div className='flex items-center gap-4'>
           <Link to={"/"} className='lg:hidden'>
@@ -125,7 +154,7 @@ const Message = () => {
         </div>
       </header>
 
-       <section className='h-[calc(100vh-128px)] overflow-x-hidden overflow-y-scroll scrollbar relative'>
+       <section className='h-[calc(100vh-128px)] overflow-x-hidden overflow-y-scroll scrollbar relative bg-slate-200 bg-opacity-50'>
               
 
               {
@@ -143,6 +172,7 @@ const Message = () => {
                           src={message?.imageUrl}
                           width={300}
                           height={300}
+                          className='object-scale-down'
                           alt='Uploaded Image'
                         />
                       </div>
@@ -150,7 +180,7 @@ const Message = () => {
                   )
               }
 
-{
+              {
                 message.videoUrl && (
                     <div className='w-full h-full bg-violet-300 bg-opacity-20 flex justify-center items-center rounded   overflow-hidden'>
                       <div className='w-fit p-20 absolute top-0 right-0 cursor-pointer hover:text-violet-500'
@@ -164,7 +194,7 @@ const Message = () => {
                         <div>
                           <video
                             src={message?.videoUrl}
-                            className='aspect-video w-full h-full max-w-sm'
+                            className='aspect-video w-full h-full max-w-sm object-scale-down'
                             controls
                             muted
                             autoPlay  
@@ -174,13 +204,23 @@ const Message = () => {
                     </div> 
                   )
               }
+
+              {
+                loading && (
+                  <div className='w-full h-full flex justify-center items-center'>
+                    <Loading/>
+                  </div>  
+                )
+              }
+
+
                
               Show all Messages
        </section>       
 
       <section className='h-16 bg-white flex items-center'>
           <div className='relative'>
-              <button className='flex justify-center items-center w-14 h-14 rounded-sm hover:bg-violet-400 p-4'
+              <button className='flex justify-center items-center w-14 h-14 rounded-sm hover:bg-violet-300 p-4'
                   onClick = {() => setOpenUpload(!openUpload)}
               >
                 <MdAttachFile 
@@ -228,6 +268,22 @@ const Message = () => {
               }
 
           </div>
+
+          <form className='h-full w-full flex gap-2' onSubmit={handleSendMessage}>
+              <input
+                type='text'
+                placeholder='Type a message...'
+                className='py-1 px-4 outline-none w-full h-full'
+                value={message.text}
+                onChange={handleOnChangeText}
+              />
+              <button className='hover:text-violet-600 mr-20'>
+                <IoIosSend 
+                  size={38}
+                />
+              </button>
+          </form>
+          
       </section>
     </div>
   )
