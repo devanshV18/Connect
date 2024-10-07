@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { Link, useParams } from 'react-router-dom'
 import Avatar from './Avatar'
@@ -12,6 +12,11 @@ import { RxCross2 } from "react-icons/rx";
 import Loading from './Loading'
 import backgroundImage from '../assets/wallpaper.jpeg'
 import { IoIosSend } from "react-icons/io";
+import moment from "moment"
+
+
+
+
 const Message = () => {
   const params = useParams()
   console.log("params", params?.userId)
@@ -34,6 +39,14 @@ const Message = () => {
   })
   
   const [loading,setLoading] = useState(false)
+  const [allMessage, setAllMessage] = useState([])
+  const currentMessage = useRef()
+
+  useEffect(() => {
+    if(currentMessage.current){
+      currentMessage.current.scrollIntoView({behavior : 'smooth', block : 'end'})
+    }
+  }, [allMessage])
 
   const handleUploadImage = async(e) => {
     const file = e.target.files[0]
@@ -89,6 +102,10 @@ const Message = () => {
       socketConnection.on('message-user', (data) => {
         setDataUser(data)
       })
+      socketConnection.on('message', (data) => {
+        console.log('message data',data)
+        setAllMessage(data)
+      })
     }
   }, [socketConnection, params?.userId, user])
 
@@ -111,8 +128,17 @@ const Message = () => {
           receiver: params.userId,
           text: message.text,
           imageUrl: message.imageUrl,
-          videoUrl: message.videoUrl
+          videoUrl: message.videoUrl,
+          msgByUserId : user?._id
         })
+
+        setMessage(
+          {
+            text: "",
+            imageUrl: "",
+            videoUrl: ""
+          }
+        )
       }
     }
 
@@ -212,10 +238,18 @@ const Message = () => {
                   </div>  
                 )
               }
-
-
-               
-              Show all Messages
+              <div className='flex flex-col gap-2 py-2 mx-2'>
+                {
+                  allMessage.map((msg,index) => {
+                    return (
+                      <div ref={currentMessage} className={`bg-violet-200 px-4 m-4 py-1 rounded w-fit ${user._id === msg.msgByUserId ? "ml-auto" : ""}`}>
+                        <p className='px-2 text-2xl'>{msg.text}</p>
+                        <p className='text-sm m-auto w-fit'>{moment(msg.createdAt).format('hh:mm')}</p>
+                      </div>
+                    )
+                  })
+                }
+              </div>
        </section>       
 
       <section className='h-16 bg-white flex items-center'>

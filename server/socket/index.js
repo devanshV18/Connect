@@ -4,6 +4,7 @@ const http = require('http')
 const getUserDetailsFromToken = require("../helpers/getUserDetailsFromToken")
 const UserModel = require("../models/UserModel")
 const ConversationModel = require("../models/ConversationModel")
+const MessageModel = require("../models/MessageModel")
 
 
 const app = express()
@@ -30,7 +31,7 @@ io.on('connection', async(socket) => {
     const user = await getUserDetailsFromToken(token)
     
     //create a room
-    socket.join(user?._id)
+    socket.join(user?._id.toString())
     onlineUser.add(user?._id.toString())
 
     io.emit('onlineUser', Array.from(onlineUser))
@@ -57,14 +58,44 @@ io.on('connection', async(socket) => {
 
     //new message
     socket.on('new message', async(data) => {
-        const conversation = await ConversationModel.findOne({
+        let conversation = await ConversationModel.findOne({
             "$or" : [
                 { sender : data?.sender, receiver : data?.receiver},
                 { sender : data?.receiver, receiver : data?.sender}
             ]
         })
 
-        console.log('new message', data)
+        
+        //if conversation is not available
+        if(!conversation){
+            const createConversation = await ConversationModel({
+                sender : data?.sender,
+                receiver : data?.receiver
+            })
+            conversation = await createConversation.save()
+        }
+
+        const message = new MessageModel({
+          text: data?.text,
+          imageUrl: data?.imageUrl,
+          videoUrl: data?.videoUrl,
+          msgByUserId : data.msgByUserId
+        })
+
+        const saveMessage = await message.save()
+
+        const updateConversation = await ConversationModel.updateOne({_id: conversation?._id}, {
+            "$push" : { messages : saveMessage?._id }
+        })
+        const getConversationMessage = await ConversationModel.findOne({
+            "$or" : [
+                { sender : data?.sender, receiver : data?.receiver},
+                { sender : data?.receiver, receiver : data?.sender}
+            ]
+        }).populate('messages').sort({updatedAt : -1})
+        
+        io.to(data?.sender).emit('message', getConversationMessage.messages)
+        io.to(data?.receiver ).emit('message', getConversationMessage.messages)
     })
 
     socket.on('disconnect', () => {
