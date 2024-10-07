@@ -1,17 +1,17 @@
 import React, {useEffect, useState} from 'react'
 import { IoChatbubbleEllipses} from "react-icons/io5";
 import { FaUserPlus } from "react-icons/fa6";
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { TbLogout2 } from "react-icons/tb";
 import Avatar from "./Avatar"
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import EditUserDetails from './EditUserDetails';
 // import Divider from "./Divider"
 import { IoArrowBack } from "react-icons/io5";
 import SearchUser from './SearchUser';
 import { FaImages } from "react-icons/fa";
 import { RiFolderVideoFill } from "react-icons/ri";
-
+import {logout} from "../redux/userSlice"
 
 const Sidebar = () => {
     const user = useSelector(state => state?.user)
@@ -19,6 +19,9 @@ const Sidebar = () => {
     const [allUser, setAllUser] = useState([]);
     const [openSearchUser, setOpenSearchUser] = useState(false);
     const socketConnection = useSelector(state => state?.user?.socketConnection)
+    const dispatch = useDispatch()
+    const navigate = useNavigate()
+
 
     useEffect(() => {
         if(socketConnection){
@@ -52,7 +55,11 @@ const Sidebar = () => {
             })
         }
     }, [socketConnection,user])
-
+    const handleLogout = () => {
+        dispatch(logout())
+        navigate("/check-email")
+        localStorage.clear()
+    }
   return (
     <div className='w-full h-full grid grid-cols-[48px,1fr] bg-white'>
         <div className='bg-slate-100 w-14 h-full rounded-tr-lg rounded-br-lg py-5 text-slate-600 flex flex-col justify-between'>
@@ -81,7 +88,7 @@ const Sidebar = () => {
                     userId={user?._id}
                     />
                 </button>
-                <button title='logout' className='w-14 h-12 flex justify-center items-center cursor-pointer hover:bg-slate-200 rounded '>
+                <button title='logout' className='w-14 h-12 flex justify-center items-center cursor-pointer hover:bg-slate-200 rounded' onClick={handleLogout}>
                     <span className='pr-1'>
                         <TbLogout2
                         size={30}
@@ -117,7 +124,7 @@ const Sidebar = () => {
                 {
                     allUser.map((conv,index) => {
                         return(
-                            <div key={conv?._id} className='flex items-center gap-2 py-3 px-2 border border-transparent hover:border-violet-300 rounded hover:bg-slate-200 cursor-pointer'>
+                            <NavLink to={"/"+conv?.userDetails?._id} key={conv?._id} className='flex items-center gap-2 py-3 px-2 border border-transparent hover:border-violet-300 rounded hover:bg-slate-200 cursor-pointer'>
                                 <div>
                                     <Avatar
                                         imageUrl={conv?.userDetails?.profile_pic}
@@ -155,11 +162,16 @@ const Sidebar = () => {
                                                 )
                                             }
                                         </div>
-                                        <p className='ml-2 text-md font-bold text-slate-800'>{conv.lastMsg.text}</p>
+                                        <p className='ml-2 text-md font-bold text-slate-800 text-ellipsis line-clamp-1'>{conv.lastMsg.text}</p>
                                     </div>
                                 </div>
-                                <p className='text-sm w-8 h-8 flex justify-center items-center ml-auto p-1 bg-violet-200 text-black font-semibold rounded-full'>{conv?.unseenMsg}</p>
-                            </div>
+                                {/* {
+                                    Boolean(conv?.unseenMsg) && (
+                                        <p className='text-xs w-6 h-6 flex justify-center items-center ml-auto p-1 bg-primary text-black font-semibold rounded-full'>{conv?.unseenMsg}</p>
+                                    )
+                                } */}
+                                {/* <p className='text-sm w-8 h-8 flex justify-center items-center ml-auto p-1 bg-violet-200 text-black font-semibold rounded-full'>{conv?.unseenMsg}</p> */}
+                            </NavLink>
                         )
                     })
                 }
