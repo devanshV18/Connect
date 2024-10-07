@@ -3,7 +3,8 @@ const { Server } = require('socket.io')
 const http = require('http')
 const getUserDetailsFromToken = require("../helpers/getUserDetailsFromToken")
 const UserModel = require("../models/UserModel")
-const {conversationModel} = require("../models/ConversationModel")
+const ConversationModel = require("../models/ConversationModel")
+
 
 const app = express()
 
@@ -55,10 +56,15 @@ io.on('connection', async(socket) => {
     })
 
     //new message
-    socket.on('new message', (data) => {
-        //check conversation is available for the two users
-     
-        console.log('New Message', data)
+    socket.on('new message', async(data) => {
+        const conversation = await ConversationModel.findOne({
+            "$or" : [
+                { sender : data?.sender, receiver : data?.receiver},
+                { sender : data?.receiver, receiver : data?.sender}
+            ]
+        })
+
+        console.log('new message', data)
     })
 
     socket.on('disconnect', () => {
