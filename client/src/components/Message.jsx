@@ -181,11 +181,47 @@ const Message = () => {
       </header>
 
        <section className='h-[calc(100vh-128px)] overflow-x-hidden overflow-y-scroll scrollbar relative bg-slate-200 bg-opacity-50'>
-              
+              <div className='flex flex-col gap-2 py-2 mx-2'>
+                {
+                  allMessage.map((msg,index) => {
+                    return (
+                      <div ref={currentMessage} className={`bg-white-200 px-4 m-4 py-1 rounded w-fit max-w-[230px] md:max-w-sm lg:max-w-md ${user._id === msg.msgByUserId ? "ml-auto bg-violet-200" : ""}`}>
+
+                        <div className='w-full'>
+                          {
+                            msg?.imageUrl && (
+                              <img
+                                src={msg?.imageUrl}
+                                className='w-full h-full object-scala-down'
+                              />
+                            )
+                          }
+                        
+                          {
+                            msg?.videoUrl && (
+                              <video
+                                src={msg?.videoUrl}
+                                className='w-full h-full object-scala-down'
+                                controls
+                              />
+                            )
+                          }
+                        </div>
+
+
+                        <p className='px-2 text-2xl'>{msg.text}</p>
+                        <p className='text-sm m-auto w-fit'>
+                          {moment(msg.createdAt).format('hh:mm')}
+                        </p>
+                      </div>
+                    )
+                  })
+                }
+              </div>
 
               {
                 message.imageUrl && (
-                    <div className='w-full h-full bg-violet-300 bg-opacity-20 flex justify-center items-center rounded   overflow-hidden'>
+                    <div className='w-full h-full sticky bottom-0 bg-violet-300 bg-opacity-20 flex justify-center items-center rounded   overflow-hidden'>
                       <div className='w-fit p-20 absolute top-0 right-0 cursor-pointer hover:text-violet-500'
                         onClick={handleClearImage}
                       >
@@ -208,7 +244,7 @@ const Message = () => {
 
               {
                 message.videoUrl && (
-                    <div className='w-full h-full bg-violet-300 bg-opacity-20 flex justify-center items-center rounded   overflow-hidden'>
+                    <div className='w-full h-full sticky bottom-0 bg-violet-300 bg-opacity-20 flex justify-center items-center rounded   overflow-hidden'>
                       <div className='w-fit p-20 absolute top-0 right-0 cursor-pointer hover:text-violet-500'
                         onClick={handleClearVideo}
                       >
@@ -233,23 +269,12 @@ const Message = () => {
 
               {
                 loading && (
-                  <div className='w-full h-full flex justify-center items-center'>
+                  <div className='w-full h-full flex sticky bottom-0 justify-center items-center'>
                     <Loading/>
                   </div>  
                 )
               }
-              <div className='flex flex-col gap-2 py-2 mx-2'>
-                {
-                  allMessage.map((msg,index) => {
-                    return (
-                      <div ref={currentMessage} className={`bg-violet-200 px-4 m-4 py-1 rounded w-fit ${user._id === msg.msgByUserId ? "ml-auto" : ""}`}>
-                        <p className='px-2 text-2xl'>{msg.text}</p>
-                        <p className='text-sm m-auto w-fit'>{moment(msg.createdAt).format('hh:mm')}</p>
-                      </div>
-                    )
-                  })
-                }
-              </div>
+
        </section>       
 
       <section className='h-16 bg-white flex items-center'>
